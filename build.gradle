@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.yy'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.spring.io/milestone'
+        mavenContent {
+            releasesOnly()
+        }
+    }
+    /*flatDir {
+        dirs 'C:/mcp_project/java-sdk-main/mcp/target', 'C:/mcp_project/java-sdk-main/mcp-spring/mcp-spring-webmvc/target'
+    }*/
+}
+dependencies {
+    // Spring Boot 기본 의존성
+    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-M7")
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    /**/
+    // Spring AI 및 MCP 의존성
+    implementation 'org.springframework.ai:spring-ai-autoconfigure-mcp-client'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+
+
+
+    implementation 'org.springframework.ai:spring-ai-client-chat'
+    implementation 'org.springframework.ai:spring-ai-mcp'
+    /**/
+
+
+    /* Optional: Spring WebFlux-based SSE client and server transport
+        implementation platform("io.modelcontextprotocol.sdk:mcp-spring-webflux")
+    */
+    /* Optional: Spring WebMVC-based SSE server transport
+
+     */
+
+    // WebFlux 의존성 (SSE 연결을 위해 필요)
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation 'org.springframework.ai:spring-ai-starter-mcp-client-webflux'
+    //implementation platform("io.modelcontextprotocol.sdk:mcp-bom:0.9.0")
+    //implementation platform("io.modelcontextprotocol.sdk:mcp")
+    //implementation platform("io.modelcontextprotocol.sdk:mcp:mcp-spring-webmvc")
+    //implementation platform("io.modelcontextprotocol.sdk:mcp:mcp-spring-webflux")
+
+}
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
