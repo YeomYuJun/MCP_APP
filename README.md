@@ -1,98 +1,62 @@
-# MCP Application
+# MCP 애플리케이션
 
-This Spring Boot application integrates OpenAI's API with MCP (Model Context Protocol) to provide an intelligent document search and Q&A system using vector databases.
+스프링 부트 애플리케이션(MCPAPP)은 OpenAI API와 MCP(Model Context Protocol)를 를 구현한 Spring Boot 애플리케이션
 
-## Architecture
-
-The application follows this processing flow:
+## 아키텍처
+현재 애플리케이션은 처리 흐름:
 
 ```
-[User Question Input]
+    [사용자]
        ↓
-[Convert Question to Vector] ← OpenAI Embedding API
+[Spring Boot App] 
        ↓
-[Search Similar Documents] ← Qdrant Vector DB
+[MCP Client] ← OPENAI AI 가 Filesystem Tool 사용
        ↓
-[Build Context-Based Prompt] ← Templates from resources
+[Filesystem MCP 서버] ← 요청에 따른 파일 시스템 작업
        ↓
-[Call OpenAI GPT API with MCP Tools]
-       ↓
-[Process Response] ← Formatting according to response type
-       ↓
-[Return Response to User]
+[사용자에게 응답 반환]
 ```
+---
+## 기능
+1. OpenAI 모델(기본: gpt-4o-mini) 통합
+2. MCP를 통한 파일 시스템 작업
+    -  파일 읽기(read_file)
+    -  파일 쓰기(write_file)
+    - 디렉토리 목록 조회(list_directory)
+    - 디렉토리 트리 보기(directory_tree)
+    - 파일 검색(search_files)
+3. 요청 타임아웃 및 로깅 설정 가능
+4. SSE 기반 MCP 서버 통신
 
-## MCP Tools Integration
+---
+## 필수 조건
+Java 17 이상
 
-This application integrates with the following MCP tools:
+Gradle
 
-1. **Filesystem MCP Tool**: For reading and writing files
-2. **Brave Search MCP Tool**: For web search capabilities 
-3. **PostgreSQL MCP Tool**: For structured data access
+OpenAI API 키
 
-## Key Components
+Docker DeskTop
 
-- **Vector Embedding**: Converting text to vector representations
-- **Vector Database (Qdrant)**: Storing and searching document vectors
-- **MCP Client/Server**: Interfacing with external tools and resources
-- **OpenAI Integration**: Leveraging GPT models for intelligent responses
+---
+## MCP 도구 통합
+애플리케이션 MCP 도구통합
 
-## Setup and Deployment
+1. **파일시스템 MCP 도구**: 파일 읽기 및 쓰기 기능
 
-### Prerequisites
+<생성 예정>
+2. **문서 처리 MCP 도구**: PDF,Excel 읽기 및 데이터 분석 추출
+3. **데이터 시각화 MCP 도구**: 전처리된 데이터를 라이브러리 기반으로 시각화 데이터 추출 기능
 
-- JDK 17 or later
-- Docker and Docker Compose
-- OpenAI API key
-- Brave Search API key (optional)
+---
+### 사전 요구 사항
+- JDK 17 이상
+- Docker 및 Docker Compose
+- OpenAI API 키
+- Brave 검색 API 키 (선택사항)
 
-### Environment Variables
+---
+### 환경 변수
 
-Set the following environment variables:
-- `OPENAI_API_KEY`: Your OpenAI API key
-- `BRAVE_SEARCH_API_KEY`: Your Brave Search API key (if using Brave Search)
-
-### Running with Docker Compose
-
-```bash
-# Build and start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop all services
-docker-compose down
-```
-
-### Accessing the API
-
-The main API is available at:
-- Chat API: `POST http://localhost:8080/api/chat`
-- Document Upload: `POST http://localhost:8080/api/documents/upload`
-- Document Listing: `GET http://localhost:8080/api/documents`
-
-## Development
-
-### Project Structure
-
-- `config/`: Application configuration
-- `controller/`: REST API endpoints
-- `model/`: Domain models
-- `repository/`: Data access interfaces
-- `service/`: Business logic
-- `mcp/`: MCP tool configurations
-- `util/`: Utility classes
-- `resources/`: Templates and configuration files
-
-### Building the Project
-
-```bash
-./gradlew clean build
-```
-
-## Customization
-
-- Modify prompt templates in `resources/templates/prompts/`
-- Configure vector database settings in `application.properties`
-- Add additional MCP tools by implementing new MCP Server configurations
+다음 환경 변수를 설정하세요:
+- `OPEN_API_KEY`: OpenAI API 키

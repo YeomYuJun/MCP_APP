@@ -1,4 +1,5 @@
 HELP.md
+API-SPEC.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
