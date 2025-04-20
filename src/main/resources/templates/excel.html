@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+    <header th:replace="~{fragments/layout :: header}"></header>
+    
+    <div class="main-content">
+        <div class="container">
+            <h1 class="mb-4">Excel 처리</h1>
+            <p class="mb-4">Excel 파일을 분석하고 데이터에서 인사이트를 추출할 수 있습니다. 특정 질문에 대한 답변도 얻을 수 있습니다.</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Excel 파일 분석</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="/excel/analyze" method="post">
+                                <div class="mb-3">
+                                    <label for="filePath" class="form-label">파일 경로</label>
+                                    <input type="text" class="form-control" id="filePath" name="filePath" placeholder="/data/sample.xlsx" required>
+                                    <div class="form-text">서버의 /data 디렉토리에 있는 Excel 파일 경로를 입력하세요. 예: /data/sample.xlsx</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="question" class="form-label">질문 (선택사항)</label>
+                                    <textarea class="form-control" id="question" name="question" rows="3" placeholder="데이터에 대한 특정 질문을 입력하세요. 예: 매출이 가장 높은 월은 언제인가요?"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">분석 시작</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Excel 처리 정보</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>처리 과정</h6>
+                            <ol>
+                                <li>파일 정보 입력: 분석할 Excel 파일 경로와 질문을 입력합니다.</li>
+                                <li>시트 분석: 시스템이 Excel 파일의 모든 시트를 파악합니다.</li>
+                                <li>데이터 추출: 각 시트에서 데이터를 추출하고 구조를 파악합니다.</li>
+                                <li>AI 분석: 추출된 데이터를 AI가 분석하여 인사이트를 도출합니다.</li>
+                                <li>질문 답변: 입력된 질문에 대한 답변을 데이터에서 찾아 제공합니다.</li>
+                            </ol>
+                            
+                            <h6 class="mt-3">지원 기능</h6>
+                            <ul>
+                                <li>시트 구조 및 데이터 요약</li>
+                                <li>주요 데이터 포인트 추출</li>
+                                <li>트렌드 및 패턴 분석</li>
+                                <li>특정 질문에 대한 데이터 기반 답변</li>
+                                <li>데이터 시각화 추천 (지원 예정)</li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle"></i> 파일을 먼저 업로드하려면 <a href="/document">문서 처리</a> 페이지를 이용하세요.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
