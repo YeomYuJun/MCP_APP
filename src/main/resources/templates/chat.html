@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+    <header th:replace="~{fragments/layout :: header}"></header>
+    
+    <div class="main-content">
+        <div class="container">
+            <h1 class="mb-4">AI 채팅</h1>
+            <p class="mb-4">MCP 도구를 활용한 AI 어시스턴트와 대화하세요. 파일 시스템 작업, Excel 처리 등 다양한 작업을 수행할 수 있습니다.</p>
+            
+            <div class="chat-container" id="chatContainer">
+                <div class="message-container">
+                    <!-- 안내 메시지 -->
+                    <div th:if="${conversations == null or conversations.isEmpty()}" class="assistant-message">
+                        안녕하세요! MCP 도구를 활용한 AI 어시스턴트입니다. 어떤 도움이 필요하신가요?<br>
+                        파일 시스템 작업이나 Excel 처리 등 다양한 작업을 요청하실 수 있습니다.<br><br>
+                        예시:<br>
+                        - "/data 디렉토리에 있는 파일 목록을 보여주세요."<br>
+                        - "/data/sample.xlsx 파일을 분석해주세요."<br>
+                        - "/data에 hello.txt 파일을 만들고 '안녕하세요'라고 내용을 넣어주세요."
+                    </div>
+                    
+                    <!-- 대화 내용 -->
+                    <div th:each="message : ${conversations}">
+                        <div>
+                            1. [[${message.messageType}]]
+                        </div>
+                        <div th:if="${message.messageType eq 'USER'}" class="user-message">
+                            <p th:text="${message.content}"></p>
+                        </div>
+                        <div th:if="${message.messageType eq 'ASSISTANT'}" class="assistant-message">
+                            <p th:utext="${#strings.replace(#strings.escapeXml(message.textContent), '&#10;', '<br>')}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <form action="/chat/submit" method="post" class="mb-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="userInput" placeholder="메시지를 입력하세요..." required>
+                    <button type="submit" class="btn btn-primary">전송</button>
+                </div>
+            </form>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">도움말</h5>
+                </div>
+                <div class="card-body">
+                    <h6>사용 가능한 MCP 도구</h6>
+                    <ul>
+                        <li><strong>파일 시스템 작업:</strong> 파일 읽기/쓰기, 디렉토리 목록 조회 등</li>
+                        <li><strong>Excel 처리:</strong> 시트 이름 읽기, 시트 데이터 읽기, 시트 수식 읽기 등</li>
+                    </ul>
+                    
+                    <h6>명령어 예시</h6>
+                    <ul>
+                        <li><code>/data 디렉토리에 있는 파일 목록을 보여주세요.</code></li>
+                        <li><code>/data/sample.xlsx 파일의 시트 이름을 알려주세요.</code></li>
+                        <li><code>/data/sample.xlsx 파일의 Sheet1 데이터를 분석해주세요.</code></li>
+                        <li><code>/data에 새로운 파일 test.txt를 만들고 "테스트 내용입니다."라고 작성해주세요.</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    
+    <script>
+        // 채팅창 자동 스크롤
+        document.addEventListener('DOMContentLoaded', function() {
+            var chatContainer = document.getElementById('chatContainer');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+    </script>
+</body>
+</html>

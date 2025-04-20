@@ -29,6 +29,7 @@ dependencies {
     // Spring Boot 기본 의존성
     implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-M7")
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     /**/
     // Spring AI 및 MCP 의존성
     implementation 'org.springframework.ai:spring-ai-autoconfigure-mcp-client'
