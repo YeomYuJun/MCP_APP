@@ -12,21 +12,21 @@ import java.util.List;
 @Configuration
 public class McpConfig {
     private static final Logger logger = LoggerFactory.getLogger(McpConfig.class);
-    
+
     @Bean
     public McpSyncClientCustomizer mcpSyncClientCustomizer() {
         return (name, spec) -> {
             logger.info("Configuring MCP client: {}", name);
-            
+
             // 모든 MCP 클라이언트 공통 설정
             spec.loggingConsumer(log -> {
                 logger.info("MCP Log [{}] from {}: {}", log.level(), name, log.logger());
             });
-            
+
             // Excel MCP 클라이언트 특정 설정
             if (name.contains("excel")) {
                 logger.info("Applying Excel-specific configurations for {}", name);
-                
+
                 // Excel MCP 클라이언트에 대한 특정 설정
                 spec.toolsChangeConsumer(tools -> {
                     logger.info("Excel tools available: {}", tools.size());
@@ -35,8 +35,11 @@ public class McpConfig {
             }
         };
     }
-    
-    @Bean
+
+    /*
+    * no use.
+    * Bean 필요 없음?
+    */
     public void logAvailableMcpClients(List<McpSyncClient> mcpSyncClients) {
         logger.info("Available MCP clients: {}", mcpSyncClients.size());
         mcpSyncClients.forEach(client -> {
