@@ -21,6 +21,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO
+// 현재 간단한 view에서 테스트중이지만 MCP 통합 사용 및
+// 사용자 처리 필요 ( 로그인 없이 사용자 session UUID 부여 및 해당 data/UUID/경로 사용하게 수정 필요 )
+//
 @Controller
 public class WebInterfaceController {
     private final ChatClient.Builder chatClientBuilder;
@@ -55,7 +59,7 @@ public class WebInterfaceController {
         model.addAttribute("activeMenu", "chat");
         return "chat";
     }
-
+    //TODO 더블클릭 submit 2회 제한(front?) 및 새로고침으로 인한 재전송 막을 방법 강구
     @PostMapping("/chat/submit")
     public String submitChat(@RequestParam("userInput") String userInput, Model model) {
         // 사용자 입력을 대화 기록에 추가
@@ -177,7 +181,10 @@ public class WebInterfaceController {
     public String analyzeExcel(@RequestParam("filePath") String filePath, 
                               @RequestParam(value = "question", required = false) String question, 
                               Model model) {
-        
+
+        //TODO MCP 툴이 경로를 못 찾을 경우  : open Excel_함수모음.xlsx: no such file or directory
+        // 가 발생함.
+
         // Excel 분석용 시스템 프롬프트
         String systemPrompt = """
         당신은 Excel 파일을 분석하는 데이터 분석 전문가입니다.
