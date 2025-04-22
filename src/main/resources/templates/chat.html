@@ -23,14 +23,11 @@
                     
                     <!-- 대화 내용 -->
                     <div th:each="message : ${conversations}">
-                        <div>
-                            1. [[${message.messageType}]]
+                        <div th:if="${#strings.equals(message.getMessageType(), 'USER')}" class="user-message">
+                            <p th:text="${message.getText()}"></p>
                         </div>
-                        <div th:if="${message.messageType eq 'USER'}" class="user-message">
-                            <p th:text="${message.content}"></p>
-                        </div>
-                        <div th:if="${message.messageType eq 'ASSISTANT'}" class="assistant-message">
-                            <p th:utext="${#strings.replace(#strings.escapeXml(message.textContent), '&#10;', '<br>')}"></p>
+                        <div th:if="${#strings.equals(message.getMessageType(), 'ASSISTANT')}" class="assistant-message">
+                            <p th:utext="${#strings.replace(message.getText(), '\n', '<br/>')}"></p>
                         </div>
                     </div>
                 </div>
