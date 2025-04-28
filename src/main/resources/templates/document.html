@@ -16,12 +16,13 @@
                             <h5 class="mb-0">문서 업로드</h5>
                         </div>
                         <div class="card-body">
-                            <form action="/document/upload" method="post" enctype="multipart/form-data">
+                            <form id="documentForm" action="/document/upload" method="post" enctype="multipart/form-data">
                                 <div class="mb-3">
                                     <label for="file" class="form-label">파일 선택</label>
                                     <input type="file" class="form-control" id="file" name="file" required>
                                     <div class="form-text">지원 파일 형식: PDF, Excel (.xlsx, .xls), Word (.docx, .doc), 텍스트 (.txt)</div>
                                 </div>
+                                <input type="hidden" name="sessionId" th:value="${sessionId}">
                                 <button type="submit" class="btn btn-primary">업로드 및 분석</button>
                             </form>
                         </div>
@@ -61,5 +62,44 @@
     </div>
     
     <footer th:replace="~{fragments/layout :: footer}"></footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 중복 제출 방지 허딓기
+            const documentForm = document.getElementById('documentForm');
+            if (documentForm) {
+                documentForm.addEventListener('submit', function(e) {
+                    // 중복 제출 방지
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    if (submitButton.disabled) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    // 버튼 비활성화 (중복 클릭 방지)
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 처리중...';
+                    
+                    // 요청 ID 생성 및 추가
+                    const requestIdField = document.getElementById('requestId');
+                    if (!requestIdField) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'requestId';
+                        input.id = 'requestId';
+                        input.value = Date.now().toString() + '-' + Math.random().toString(36).substring(2, 15);
+                        this.appendChild(input);
+                    } else {
+                        requestIdField.value = Date.now().toString() + '-' + Math.random().toString(36).substring(2, 15);
+                    }
+                });
+            }
+        });
+        
+        // 페이지 새로고침 시 폼 재전송 방지
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
 </body>
 </html>

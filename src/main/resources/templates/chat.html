@@ -70,7 +70,46 @@
         document.addEventListener('DOMContentLoaded', function() {
             var chatContainer = document.getElementById('chatContainer');
             chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // 중복 제출 방지 허딓기
+            const chatForm = document.getElementById('chatForm');
+            if (chatForm) {
+                chatForm.addEventListener('submit', function(e) {
+                    // 중복 제출 방지
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    if (submitButton.disabled) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    // 버튼 비활성화 (중복 클릭 방지)
+                    submitButton.disabled = true;
+                    
+                    // 3초 후 다시 활성화
+                    setTimeout(() => {
+                        submitButton.disabled = false;
+                    }, 3000);
+                    
+                    // 요청 ID 생성 및 추가
+                    const requestIdField = document.getElementById('requestId');
+                    if (!requestIdField) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'requestId';
+                        input.id = 'requestId';
+                        input.value = Date.now().toString() + '-' + Math.random().toString(36).substring(2, 15);
+                        this.appendChild(input);
+                    } else {
+                        requestIdField.value = Date.now().toString() + '-' + Math.random().toString(36).substring(2, 15);
+                    }
+                });
+            }
         });
+        
+        // 페이지 새로고침 시 폼 재전송 방지
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
     </script>
 </body>
 </html>

@@ -16,7 +16,7 @@
                             <h5 class="mb-0">Excel 파일 분석</h5>
                         </div>
                         <div class="card-body">
-                            <form action="/excel/analyze" method="post">
+                            <form id="excelForm" action="/excel/analyze" method="post">
                                 <div class="mb-3">
                                     <label for="filePath" class="form-label">파일 경로</label>
                                     <input type="text" class="form-control" id="filePath" name="filePath" placeholder="/data/sample.xlsx" required>
@@ -26,6 +26,7 @@
                                     <label for="question" class="form-label">질문 (선택사항)</label>
                                     <textarea class="form-control" id="question" name="question" rows="3" placeholder="데이터에 대한 특정 질문을 입력하세요. 예: 매출이 가장 높은 월은 언제인가요?"></textarea>
                                 </div>
+                                <input type="hidden" name="sessionId" th:value="${sessionId}">
                                 <button type="submit" class="btn btn-primary">분석 시작</button>
                             </form>
                         </div>
@@ -67,5 +68,44 @@
     </div>
     
     <footer th:replace="~{fragments/layout :: footer}"></footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 중복 제출 방지 허딓기
+            const excelForm = document.getElementById('excelForm');
+            if (excelForm) {
+                excelForm.addEventListener('submit', function(e) {
+                    // 중복 제출 방지
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    if (submitButton.disabled) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    // 버튼 비활성화 (중복 클릭 방지)
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 분석중...';
+                    
+                    // 요청 ID 생성 및 추가
+                    const requestIdField = document.getElementById('requestId');
+                    if (!requestIdField) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'requestId';
+                        input.id = 'requestId';
+                        input.value = Date.now().toString() + '-' + Math.random().toString(36).substring(2, 15);
+                        this.appendChild(input);
+                    } else {
+                        requestIdField.value = Date.now().toString() + '-' + Math.random().toString(36).substring(2, 15);
+                    }
+                });
+            }
+        });
+        
+        // 페이지 새로고침 시 폼 재전송 방지
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
 </body>
 </html>
