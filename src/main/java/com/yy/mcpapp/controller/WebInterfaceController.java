@@ -62,9 +62,10 @@ public class WebInterfaceController {
     private String ensureSessionId(HttpSession session) {
         String sessionId = (String) session.getAttribute("SESSION_UUID");
         if (sessionId == null) {
-            sessionId = UUID.randomUUID().toString();
+            String uuidStr = UUID.randomUUID().toString().replace("-", "");; // byte 변환하며 마운트 이슈있음.
+            sessionId = "s-" + uuidStr.substring(0, 16); // 첫 16자만 사용
+            System.out.println("새 세션 ID 생성: " + sessionId);
             session.setAttribute("SESSION_UUID", sessionId);
-            
             // 사용자별 디렉토리 생성
             createUserDirectory(sessionId);
         }
@@ -129,21 +130,21 @@ public class WebInterfaceController {
         model.addAttribute("sessionId", sessionId);
         return "chat";
     }
-    
+
     @PostMapping("/chat/submit")
     public String submitChat(
             @RequestParam("userInput") String userInput,
             @RequestParam(value = "requestId", required = false) String requestId,
             HttpSession session,
             Model model) {
-        
+
         String sessionId = ensureSessionId(session);
         List<Message> conversationHistory = getConversationHistory(sessionId);
-        
+
         // 중복 요청 체크를 위한 속성 이름 생성
         String lastRequestAttr = "LAST_REQUEST_ID";
         String lastRequestId = (String) session.getAttribute(lastRequestAttr);
-        
+
         // 중복 요청인 경우 그냥 반환
         if (requestId != null && requestId.equals(lastRequestId)) {
             model.addAttribute("conversations", conversationHistory);
@@ -151,16 +152,16 @@ public class WebInterfaceController {
             model.addAttribute("sessionId", sessionId);
             return "chat";
         }
-        
+
         // 현재 요청 ID 저장
         if (requestId != null) {
             session.setAttribute(lastRequestAttr, requestId);
         }
-        
+
         // 사용자 입력을 대화 기록에 추가
         UserMessage userMessage = new UserMessage(userInput);
         conversationHistory.add(userMessage);
-        
+
         // MCP 도구를 포함한 시스템 프롬프트 (사용자별 경로 포함)
         String systemPrompt = String.format("""
         당신은 MCP(Model Context Protocol) 도구를 활용하는 AI 어시스턴트입니다.
