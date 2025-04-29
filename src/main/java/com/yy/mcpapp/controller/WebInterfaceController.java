@@ -162,8 +162,9 @@ public class WebInterfaceController {
         UserMessage userMessage = new UserMessage(userInput);
         conversationHistory.add(userMessage);
 
-        // MCP 도구를 포함한 시스템 프롬프트 (사용자별 경로 포함)
-        String systemPrompt = String.format("""
+        try {
+            // MCP 도구를 포함한 시스템 프롬프트 (사용자별 경로 포함)
+            String systemPrompt = String.format("""
         당신은 MCP(Model Context Protocol) 도구를 활용하는 AI 어시스턴트입니다.
         파일 시스템 및 Excel 작업을 수행할 수 있으며, 사용자의 요청에 따라 적절한 도구를 사용하세요.
         
@@ -176,17 +177,29 @@ public class WebInterfaceController {
         모든 파일 경로는 %s 디렉토리 내에서 접근 가능합니다.
         """, mcpBaseDir + "/" + sessionId);
 
-        String aiResponse = mcpChatClient.prompt()
-                .system(systemPrompt)
-                .user(userInput)
-                .call()
-                .content();
+            String aiResponse = mcpChatClient.prompt()
+                    .system(systemPrompt)
+                    .user(userInput)
+                    .call()
+                    .content();
 
-        // AI 응답을 대화 기록에 추가
-        AssistantMessage assistantMessage = new AssistantMessage(aiResponse);
-        conversationHistory.add(assistantMessage);
+            // AI 응답을 대화 기록에 추가
+            AssistantMessage assistantMessage = new AssistantMessage(aiResponse);
+            conversationHistory.add(assistantMessage);
 
-        // AI 응답 생성
+        } catch (Exception e) {
+            // 오류 발생 시 사용자에게 알림
+            String errorMessage = "죄송합니다. 요청 처리 중 오류가 발생했습니다: " + e.getMessage();
+
+            // 디버깅을 위한 간단한 로깅
+            System.err.println("채팅 처리 중 오류 발생: " + e.getMessage());
+
+            // 실패한 응답 대신 오류 메시지를 사용자에게 보여줌
+            AssistantMessage errorResponse = new AssistantMessage(errorMessage);
+            conversationHistory.add(errorResponse);
+        }
+
+        // 응답 모델 설정
         model.addAttribute("conversations", conversationHistory);
         model.addAttribute("activeMenu", "chat");
         model.addAttribute("sessionId", sessionId);
